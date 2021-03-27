@@ -56,9 +56,11 @@ h3{
     left: 150px;
     bottom: 300px;
 }
-.m1 {
-    max-width: 100%;
+
+.m1{
+    max-width:100%;
 }
+
 .pp1{
     height: 170px;
     width: 170px;
