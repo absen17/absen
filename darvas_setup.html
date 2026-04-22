@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Darvas Open Positions</title>
+
+<style>
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+}
+
+body{
+    font-family:Arial, sans-serif;
+    background:linear-gradient(135deg,#0f172a,#1e293b);
+    color:white;
+    padding:40px;
+}
+
+.container{
+    max-width:1200px;
+    margin:auto;
+}
+
+h1{
+    text-align:center;
+    font-size:42px;
+    margin-bottom:12px;
+}
+
+.subtitle{
+    text-align:center;
+    color:#cbd5e1;
+    margin-bottom:25px;
+    font-size:18px;
+}
+
+/* Dropdown */
+.filter-box{
+    text-align:center;
+    margin-bottom:35px;
+}
+
+select{
+    padding:12px 18px;
+    border:none;
+    border-radius:10px;
+    font-size:16px;
+    background:#1e293b;
+    color:white;
+    cursor:pointer;
+}
+
+/* Cards */
+.image-container{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+    gap:25px;
+}
+
+.card{
+    background:rgba(255,255,255,0.08);
+    border-radius:18px;
+    overflow:hidden;
+    box-shadow:0 10px 25px rgba(0,0,0,0.35);
+    transition:0.3s ease;
+}
+
+.card:hover{
+    transform:translateY(-8px);
+}
+
+.card img{
+    width:100%;
+    height:220px;
+    object-fit:cover;
+    cursor:pointer;
+}
+
+.card-content{
+    padding:18px;
+}
+
+.card-content h3{
+    margin-bottom:10px;
+    font-size:22px;
+}
+
+.card-content p{
+    color:#cbd5e1;
+    font-size:15px;
+}
+
+/* Fullscreen popup */
+.popup{
+    display:none;
+    position:fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:100%;
+    background:rgba(0,0,0,0.92);
+    justify-content:center;
+    align-items:center;
+    z-index:999;
+}
+
+.popup img{
+    max-width:95%;
+    max-height:95%;
+    border-radius:12px;
+}
+
+.close{
+    position:absolute;
+    top:20px;
+    right:30px;
+    font-size:40px;
+    color:white;
+    cursor:pointer;
+}
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1>Darvas Open Positions</h1>
+<p class="subtitle">Select setup type to view matching charts</p>
+
+<div class="filter-box">
+<select onchange="filterCards(this.value)">
+<option value="all">All Setups</option>
+<option value="Humble">Humble</option>
+<option value="Ziddi">Ziddi</option>
+<option value="Super Ziddi">Super Ziddi</option>
+<option value="Rounding Bottom">Rounding Bottom</option>
+<option value="CW&H">CW&H</option>
+<option value="RH&S">RH&S</option>
+</select>
+</div>
+
+<div class="image-container">
+
+<div class="card" data-type="RH&S">
+<img src="nestle.png" onclick="openImage(this.src)">
+<div class="card-content">
+<h3>Nestle</h3>
+<p>RH&S Setup</p>
+</div>
+</div>
+
+<div class="card" data-type="Humble">
+<img src="image2.jpg" onclick="openImage(this.src)">
+<div class="card-content">
+<h3>Stock 2</h3>
+<p>Humble Setup</p>
+</div>
+</div>
+
+<div class="card" data-type="Super Ziddi">
+<img src="image3.jpg" onclick="openImage(this.src)">
+<div class="card-content">
+<h3>Stock 3</h3>
+<p>Super Ziddi Setup</p>
+</div>
+</div>
+
+</div>
+</div>
+
+<!-- Fullscreen Image -->
+<div class="popup" id="popup">
+<span class="close" onclick="closeImage()">&times;</span>
+<img id="popup-img">
+</div>
+
+<script>
+function openImage(src){
+    document.getElementById("popup").style.display="flex";
+    document.getElementById("popup-img").src=src;
+}
+
+function closeImage(){
+    document.getElementById("popup").style.display="none";
+}
+
+function filterCards(type){
+    let cards = document.querySelectorAll(".card");
+
+    cards.forEach(card=>{
+        if(type==="all" || card.dataset.type===type){
+            card.style.display="block";
+        }else{
+            card.style.display="none";
+        }
+    });
+}
+</script>
+
+</body>
+</html>
