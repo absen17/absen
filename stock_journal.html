@@ -18,7 +18,9 @@
       --shadow:0 20px 50px rgba(0,0,0,.4);
       --radius:22px;
     }
+
     *{box-sizing:border-box;margin:0;padding:0}
+
     body{
       font-family:Arial, Helvetica, sans-serif;
       background:
@@ -27,11 +29,13 @@
       color:var(--text);
       min-height:100vh;
     }
+
     .container{
       width:min(1400px,94%);
       margin:auto;
       padding:20px 0 40px;
     }
+
     .topbar{
       display:flex;
       justify-content:space-between;
@@ -40,14 +44,17 @@
       flex-wrap:wrap;
       margin-bottom:20px;
     }
+
     .title h1{
       font-size:clamp(2rem,5vw,3rem);
       letter-spacing:-2px;
     }
+
     .title p{
       color:var(--muted);
       margin-top:6px;
     }
+
     .back-btn{
       text-decoration:none;
       color:white;
@@ -64,6 +71,7 @@
       gap:14px;
       margin-bottom:20px;
     }
+
     .stat-card{
       background:var(--card);
       border:1px solid var(--border);
@@ -71,19 +79,24 @@
       padding:18px;
       box-shadow:var(--shadow);
     }
+
     .stat-card span{
       color:var(--muted);
       display:block;
       margin-bottom:8px;
       font-size:.9rem;
     }
-    .stat-card h2{font-size:1.35rem}
+
+    .stat-card h2{
+      font-size:1.35rem;
+    }
 
     .main-grid{
       display:grid;
       grid-template-columns:380px 1fr;
       gap:18px;
     }
+
     .panel{
       background:var(--card);
       border:1px solid var(--border);
@@ -91,17 +104,20 @@
       padding:18px;
       box-shadow:var(--shadow);
     }
+
     .panel h2{
       margin-bottom:18px;
       letter-spacing:-1px;
     }
 
     form{display:grid;gap:12px}
+
     .row{
       display:grid;
       grid-template-columns:1fr 1fr;
       gap:12px;
     }
+
     input, textarea, select{
       width:100%;
       padding:13px 14px;
@@ -112,6 +128,7 @@
       color:var(--text);
       border:1px solid rgba(255,255,255,.04);
     }
+
     textarea{
       resize:vertical;
       min-height:90px;
@@ -126,6 +143,7 @@
       background:linear-gradient(135deg,var(--red),var(--red2));
       color:white;
     }
+
     .btn.secondary{
       background:#1c2330;
     }
@@ -139,6 +157,7 @@
       border:1px solid rgba(239,68,68,.10);
       border-radius:18px;
     }
+
     .quote-top{
       display:flex;
       justify-content:space-between;
@@ -146,25 +165,30 @@
       align-items:center;
       flex-wrap:wrap;
     }
+
     .quote-top strong{font-size:1rem}
     .quote-meta{color:var(--muted);font-size:.92rem}
+
     .quote-values{
       display:grid;
       grid-template-columns:repeat(3,1fr);
       gap:10px;
     }
+
     .mini-box{
       background:var(--card2);
       border-radius:14px;
       padding:12px;
       border:1px solid rgba(255,255,255,.04);
     }
+
     .mini-box span{
       display:block;
       color:var(--muted);
       font-size:.82rem;
       margin-bottom:5px;
     }
+
     .mini-box b{font-size:1.05rem}
 
     .table-wrap{
@@ -172,19 +196,23 @@
       border-radius:18px;
       border:1px solid var(--border);
     }
+
     table{
       width:100%;
       border-collapse:collapse;
       min-width:1100px;
     }
+
     thead{
       background:#11161f;
     }
+
     th, td{
       text-align:left;
       padding:14px 12px;
       border-bottom:1px solid rgba(255,255,255,.05);
     }
+
     th{
       color:#fff;
       font-size:.9rem;
@@ -192,16 +220,20 @@
       user-select:none;
       white-space:nowrap;
     }
+
     td{
       color:#dbe2ea;
       font-size:.95rem;
       vertical-align:top;
     }
+
     tr:hover{
       background:rgba(239,68,68,.04);
     }
+
     .profit{color:#86efac;font-weight:700}
     .loss{color:#fca5a5;font-weight:700}
+
     .action-btn{
       border:none;
       cursor:pointer;
@@ -212,6 +244,7 @@
       margin-right:6px;
       margin-bottom:4px;
     }
+
     .delete-btn{background:#3b0a0a}
 
     .hint{
@@ -302,7 +335,7 @@
         </div>
 
         <div class="hint">
-          Plug your market-data API in the <code>fetchQuote()</code> function. For a full live app, use a licensed source or a backend proxy.
+          Put your remote API URL in <b>QUOTE_API_URL</b> inside the script below. GitHub Pages cannot run server code.
         </div>
       </div>
 
@@ -369,6 +402,11 @@
 <script>
   const STORAGE_KEY = 'journalEntries_v2';
 
+  // Paste your real remote API URL here later if you want live CMP fetch.
+  // Example:
+  // const QUOTE_API_URL = 'https://your-api-domain.com/api/quote';
+  const QUOTE_API_URL = '';
+
   const form = document.getElementById('stockForm');
   const tableBody = document.getElementById('tableBody');
 
@@ -392,7 +430,6 @@
   let sortKey = 'date';
   let sortAsc = false;
 
-  // ---------- live calculation ----------
   function calculatePnL(){
     const cmp = Number(cmpEl.value || 0);
     const buy = Number(buyPriceEl.value || 0);
@@ -401,8 +438,8 @@
     const pnl = (cmp - buy) * qty;
     const pnlPct = buy > 0 ? ((cmp - buy) / buy) * 100 : 0;
 
-    profitEl.value = pnl ? pnl.toFixed(2) : '0.00';
-    profitPctEl.value = pnlPct ? pnlPct.toFixed(2) : '0.00';
+    profitEl.value = pnl.toFixed(2);
+    profitPctEl.value = pnlPct.toFixed(2);
 
     return { pnl, pnlPct };
   }
@@ -411,7 +448,6 @@
   buyPriceEl.addEventListener('input', calculatePnL);
   qtyEl.addEventListener('input', calculatePnL);
 
-  // ---------- market data fetch ----------
   async function fetchQuote(){
     const exchange = exchangeEl.value.trim().toUpperCase();
     const symbol = symbolEl.value.trim().toUpperCase();
@@ -421,33 +457,27 @@
       return;
     }
 
+    if(!QUOTE_API_URL){
+      quoteStatus.textContent = 'Manual mode';
+      alert('Set QUOTE_API_URL in the script first.');
+      return;
+    }
+
     quoteStatus.textContent = 'Fetching...';
     liveExchange.textContent = exchange + ' / ' + symbol;
     fetchBtn.disabled = true;
 
     try{
-      /*
-        Replace this with your real data provider / backend route.
-        Expected JSON response example:
-        {
-          "cmp": 1234.5,
-          "changePercent": 1.23,
-          "name": "Reliance Industries"
-        }
-      */
-
-      const API_URL = `/api/quote?exchange=${encodeURIComponent(exchange)}&symbol=${encodeURIComponent(symbol)}`;
-      const res = await fetch(API_URL);
+      const url = `${QUOTE_API_URL}?exchange=${encodeURIComponent(exchange)}&symbol=${encodeURIComponent(symbol)}`;
+      const res = await fetch(url);
 
       if(!res.ok){
         throw new Error('Quote API failed');
       }
 
       const data = await res.json();
-
       const cmp = Number(data.cmp);
       const changePercent = Number(data.changePercent);
-      const name = data.name || symbol;
 
       if(!Number.isFinite(cmp) || !Number.isFinite(changePercent)){
         throw new Error('Invalid API response');
@@ -455,15 +485,16 @@
 
       cmpEl.value = cmp.toFixed(2);
       changeEl.value = changePercent.toFixed(2);
-      document.getElementById('stock').value = name;
+      document.getElementById('stock').value = data.name || symbol;
 
       liveCmp.textContent = cmp.toFixed(2);
       liveChange.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
       quoteStatus.textContent = 'Fetched';
+
       calculatePnL();
     }catch(err){
-      quoteStatus.textContent = 'Manual fallback';
-      alert('Live API not connected or failed. You can still enter CMP manually.');
+      quoteStatus.textContent = 'Error';
+      alert('Quote fetch failed. Check your remote API URL.');
       console.error(err);
     }finally{
       fetchBtn.disabled = false;
@@ -472,7 +503,6 @@
 
   fetchBtn.addEventListener('click', fetchQuote);
 
-  // ---------- storage ----------
   function saveEntries(){
     localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
   }
@@ -489,7 +519,6 @@
 
   document.getElementById('clearBtn').addEventListener('click', clearForm);
 
-  // ---------- table render ----------
   function getSortValue(entry, key){
     if(key === 'profit' || key === 'profitPct' || key === 'cmp' || key === 'change' || key === 'cagr' || key === 'buyPrice' || key === 'qty'){
       return Number(entry[key]) || 0;
@@ -548,11 +577,10 @@
     document.getElementById('winRate').innerText = list.length ? ((wins / list.length) * 100).toFixed(0) + '%' : '0%';
   }
 
-  // ---------- form submit ----------
   form.addEventListener('submit', (e) => {
     e.preventDefault();
 
-    const pnlData = calculatePnL();
+    calculatePnL();
 
     const entry = {
       stock: document.getElementById('stock').value.trim().toUpperCase(),
@@ -575,14 +603,12 @@
     clearForm();
   });
 
-  // ---------- delete ----------
   function deleteEntry(index){
     entries.splice(index, 1);
     saveEntries();
     renderTable();
   }
 
-  // ---------- sorting ----------
   document.querySelectorAll('th[data-sort]').forEach(th => {
     th.addEventListener('click', () => {
       const key = th.dataset.sort;
