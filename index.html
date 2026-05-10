@@ -29,20 +29,25 @@
     }
 
     [data-theme="light"]{
-      --bg:#07090d;
-      --bg-soft:#0f1218;
-      --text:#f8fafc;
-      --muted:#b7beca;
-      --card:rgba(17,21,29,.92);
-      --border:rgba(239,68,68,.18);
-      --shadow:0 18px 48px rgba(0,0,0,.45);
-      --primary:#ef4444;
-      --primary-2:#b91c1c;
-      --nav:rgba(7,9,13,.78);
-      --nav-border:rgba(239,68,68,.18);
-      --hero:radial-gradient(circle at top, rgba(239,68,68,.16) 0%, rgba(7,9,13,0) 40%), linear-gradient(180deg,#090b10 0%,#0b0f15 55%,#07090d 100%);
-      --footer:#05070a;
-    }
+  --bg:#f4f7fb;
+  --bg-soft:#ffffff;
+  --text:#0f172a;
+  --muted:#475569;
+  --card:rgba(255,255,255,.96);
+  --border:rgba(15,23,42,.10);
+  --shadow:0 18px 48px rgba(15,23,42,.10);
+  --primary:#ef4444;
+  --primary-2:#b91c1c;
+  --nav:rgba(255,255,255,.78);
+  --nav-border:rgba(15,23,42,.10);
+  --hero:linear-gradient(180deg,#ffe9e9 0%,#fff 55%,#f4f7fb 100%);
+  --footer:#0f172a;
+}
+
+body[data-theme="light"] .theme-btn{
+  background:linear-gradient(180deg,#ffffff,#e2e8f0);
+  color:#0f172a;
+}
 
     [data-theme="dark"]{
       --bg:#07090d;
@@ -424,7 +429,7 @@
           <a href="#skills">Skills</a>
           <a href="#contact">Contact</a>
           <a href="login.html?next=darvas.html">Darvas</a>
-          <a href="stock_journal.html">Journal</a>
+          <a href="test.html">Journal</a>
         </nav>
 
         <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle dark mode">🌙 Dark</button>
