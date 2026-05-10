@@ -259,6 +259,16 @@ select{
     transform:scale(1.08);
 }
 
+.empty-state{
+    text-align:center;
+    color:var(--muted);
+    padding:30px 10px;
+    grid-column:1 / -1;
+    border:1px dashed rgba(255,255,255,0.16);
+    border-radius:18px;
+    background:rgba(0,0,0,0.22);
+}
+
 @media (max-width: 700px){
     body{
         padding:16px;
@@ -292,6 +302,7 @@ select{
 
 <body style="display:none;" data-theme="light">
 <script type="module" src="auth-guard.js"></script>
+<script src="darvas-data.js"></script>
 
 <div class="container">
 
@@ -305,11 +316,11 @@ select{
     <p class="subtitle">Select setup type to view matching charts</p>
 
     <div class="filter-box">
-        <select onchange="filterCards(this.value)">
+        <select id="setupFilter">
             <option value="all">All Setups</option>
             <option value="Humble">Humble</option>
             <option value="Ziddi">Ziddi</option>
-            <option value="Super Ziddi">Super Ziddi</option>
+            <option value="Momentum">Momentum</option>
             <option value="Rounding Bottom">Rounding Bottom</option>
             <option value="VCP">CW&H/VCP</option>
             <option value="RH&S">RH&S</option>
@@ -318,61 +329,7 @@ select{
         </select>
     </div>
 
-    <div class="image-container">
-
-        <div class="card" data-type="RH&S">
-            <img src="image/nestle.png" onclick="openImage(this.src)" alt="Nestle chart">
-            <div class="card-content">
-                <div class="card-text">
-                    <h3>Nestle</h3>
-                    <p>Reverse Head &amp; Shoulders</p>
-                </div>
-                <a href="https://www.tradingview.com/chart/?symbol=NSE:NESTLEIND"
-                   target="_blank"
-                   class="tv-btn">📈 Chart</a>
-            </div>
-        </div>
-
-        <div class="card" data-type="VCP">
-            <img src="image/KWIL.png" onclick="openImage(this.src)" alt="KWIL chart">
-            <div class="card-content">
-                <div class="card-text">
-                    <h3>KWIL</h3>
-                    <p>VCP</p>
-                </div>
-                <a href="https://www.tradingview.com/chart/?symbol=NSE:KWIL"
-                   target="_blank"
-                   class="tv-btn">📈 Chart</a>
-            </div>
-        </div>
-
-        <div class="card" data-type="Monthly Breakout">
-            <img src="image/KRISHNADEF.png" onclick="openImage(this.src)" alt="KRISHNADEF chart">
-            <div class="card-content">
-                <div class="card-text">
-                    <h3>KRISHNADEF</h3>
-                    <p>Monthly Breakout</p>
-                </div>
-                <a href="https://www.tradingview.com/chart/?symbol=NSE:KRISHNADEF"
-                   target="_blank"
-                   class="tv-btn">📈 Chart</a>
-            </div>
-        </div>
-
-        <div class="card" data-type="VCP">
-            <img src="image/SCI.png" onclick="openImage(this.src)" alt="SCI chart">
-            <div class="card-content">
-                <div class="card-text">
-                    <h3>SCI</h3>
-                    <p>VCP</p>
-                </div>
-                <a href="https://www.tradingview.com/chart/?symbol=NSE:SCI"
-                   target="_blank"
-                   class="tv-btn">📈 Chart</a>
-            </div>
-        </div>
-
-    </div>
+    <div class="image-container" id="imageContainer"></div>
 </div>
 
 <div class="popup" id="popup">
@@ -381,6 +338,9 @@ select{
 </div>
 
 <script>
+const imageContainer = document.getElementById("imageContainer");
+const setupFilter = document.getElementById("setupFilter");
+
 function openImage(src){
     document.getElementById("popup").style.display = "flex";
     document.getElementById("popup-img").src = src;
@@ -390,18 +350,50 @@ function closeImage(){
     document.getElementById("popup").style.display = "none";
 }
 
-function filterCards(type){
-    const cards = document.querySelectorAll(".card");
-    cards.forEach(card => {
-        card.style.display = (type === "all" || card.dataset.type === type) ? "block" : "none";
-    });
+function renderCards(type = "all"){
+    const items = window.DARVAS_ITEMS || [];
+    const filtered = type === "all"
+      ? items
+      : items.filter(item => item.type === type);
+
+    if (!filtered.length) {
+      imageContainer.innerHTML = `
+        <div class="empty-state">
+          No setups found for this filter.
+        </div>
+      `;
+      return;
+    }
+
+    imageContainer.innerHTML = filtered.map(item => `
+      <div class="card" data-type="${item.type}">
+          <img src="${item.image}" onclick="openImage(this.src)" alt="${item.title} chart">
+          <div class="card-content">
+              <div class="card-text">
+                  <h3>${item.title}</h3>
+                  <p>${item.setup}</p>
+              </div>
+              <a href="${item.chart}" target="_blank" class="tv-btn">📈 Chart</a>
+          </div>
+      </div>
+    `).join("");
 }
+
+function filterCards(type){
+    renderCards(type);
+}
+
+setupFilter.addEventListener("change", (e) => {
+    filterCards(e.target.value);
+});
 
 document.addEventListener("keydown", function(e){
     if(e.key === "Escape"){
         closeImage();
     }
 });
+
+renderCards("all");
 </script>
 
 </body>
