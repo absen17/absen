@@ -404,7 +404,7 @@
 
 
   // const QUOTE_API_URL = 'https://your-api-domain.com/api/quote';
-  const QUOTE_API_URL = 'https://api.allorigins.win/raw?url=https://query1.finance.yahoo.com/v8/finance/chart/';
+  const QUOTE_API_URL = 'https://api.allorigins.win/raw?url=';
 
   const form = document.getElementById('stockForm');
   const tableBody = document.getElementById('tableBody');
@@ -448,7 +448,6 @@
   qtyEl.addEventListener('input', calculatePnL);
 
   async function fetchQuote() {
-
   const exchange = exchangeEl.value.trim().toUpperCase();
   const symbol = symbolEl.value.trim().toUpperCase();
 
@@ -461,22 +460,12 @@
   fetchBtn.disabled = true;
 
   try {
-
     quoteStatus.textContent = 'Fetching...';
 
-    let yahooSymbol = '';
+    const apiSymbol = exchange === 'BSE' ? `${symbol}.BO` : `${symbol}.NS`;
+    const targetUrl = `http://65.0.104.9/stock?symbol=${encodeURIComponent(apiSymbol)}&res=num`;
 
-    if(exchange === 'NSE'){
-      yahooSymbol = symbol + '.NS';
-    } else {
-      yahooSymbol = symbol + '.BO';
-    }
-
-    const url = QUOTE_API_URL +
-      encodeURIComponent(
-        `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}`
-      );
-
+    const url = QUOTE_API_URL + encodeURIComponent(targetUrl);
     const res = await fetch(url);
 
     if (!res.ok) {
@@ -485,36 +474,29 @@
 
     const data = await res.json();
 
-    const result = data.chart.result[0].meta;
+    const stockData = data.data || data;
+    const cmp = Number(stockData.last_price);
+    const changePercent = Number(stockData.percent_change);
+    const name = stockData.company_name || symbol;
 
-    const cmp = Number(result.regularMarketPrice);
-    const prevClose = Number(result.previousClose);
-
-    const changePercent =
-      ((cmp - prevClose) / prevClose) * 100;
+    if (!Number.isFinite(cmp) || !Number.isFinite(changePercent)) {
+      throw new Error('Invalid API response');
+    }
 
     cmpEl.value = cmp.toFixed(2);
     changeEl.value = changePercent.toFixed(2);
-
-    document.getElementById('stock').value = symbol;
+    document.getElementById('stock').value = name;
 
     liveCmp.textContent = cmp.toFixed(2);
-
-    liveChange.textContent =
-      `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
-
+    liveChange.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
     quoteStatus.textContent = 'Fetched';
 
     calculatePnL();
-
   } catch (err) {
-
     console.error(err);
     quoteStatus.textContent = 'Error';
-    alert('Invalid Symbol or API issue.');
-
+    alert('Invalid symbol or API issue.');
   } finally {
-
     fetchBtn.disabled = false;
   }
 }
