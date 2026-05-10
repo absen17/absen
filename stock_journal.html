@@ -402,10 +402,9 @@
 <script>
   const STORAGE_KEY = 'journalEntries_v2';
 
-  // Paste your real remote API URL here later if you want live CMP fetch.
-  // Example:
+
   // const QUOTE_API_URL = 'https://your-api-domain.com/api/quote';
-  const QUOTE_API_URL = '';
+  const QUOTE_API_URL = 'https://api.allorigins.win/raw?url=https://query1.finance.yahoo.com/v8/finance/chart/';
 
   const form = document.getElementById('stockForm');
   const tableBody = document.getElementById('tableBody');
@@ -448,58 +447,77 @@
   buyPriceEl.addEventListener('input', calculatePnL);
   qtyEl.addEventListener('input', calculatePnL);
 
-  async function fetchQuote(){
-    const exchange = exchangeEl.value.trim().toUpperCase();
-    const symbol = symbolEl.value.trim().toUpperCase();
+  async function fetchQuote() {
 
-    if(!symbol){
-      alert('Please enter a symbol first.');
-      return;
-    }
+  const exchange = exchangeEl.value.trim().toUpperCase();
+  const symbol = symbolEl.value.trim().toUpperCase();
 
-    if(!QUOTE_API_URL){
-      quoteStatus.textContent = 'Manual mode';
-      alert('Set QUOTE_API_URL in the script first.');
-      return;
-    }
+  if (!symbol) {
+    alert('Please enter a symbol first.');
+    return;
+  }
+
+  liveExchange.textContent = exchange + ' / ' + symbol;
+  fetchBtn.disabled = true;
+
+  try {
 
     quoteStatus.textContent = 'Fetching...';
-    liveExchange.textContent = exchange + ' / ' + symbol;
-    fetchBtn.disabled = true;
 
-    try{
-      const url = `${QUOTE_API_URL}?exchange=${encodeURIComponent(exchange)}&symbol=${encodeURIComponent(symbol)}`;
-      const res = await fetch(url);
+    let yahooSymbol = '';
 
-      if(!res.ok){
-        throw new Error('Quote API failed');
-      }
-
-      const data = await res.json();
-      const cmp = Number(data.cmp);
-      const changePercent = Number(data.changePercent);
-
-      if(!Number.isFinite(cmp) || !Number.isFinite(changePercent)){
-        throw new Error('Invalid API response');
-      }
-
-      cmpEl.value = cmp.toFixed(2);
-      changeEl.value = changePercent.toFixed(2);
-      document.getElementById('stock').value = data.name || symbol;
-
-      liveCmp.textContent = cmp.toFixed(2);
-      liveChange.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
-      quoteStatus.textContent = 'Fetched';
-
-      calculatePnL();
-    }catch(err){
-      quoteStatus.textContent = 'Error';
-      alert('Quote fetch failed. Check your remote API URL.');
-      console.error(err);
-    }finally{
-      fetchBtn.disabled = false;
+    if(exchange === 'NSE'){
+      yahooSymbol = symbol + '.NS';
+    } else {
+      yahooSymbol = symbol + '.BO';
     }
+
+    const url = QUOTE_API_URL +
+      encodeURIComponent(
+        `https://query1.finance.yahoo.com/v8/finance/chart/${yahooSymbol}`
+      );
+
+    const res = await fetch(url);
+
+    if (!res.ok) {
+      throw new Error('API failed');
+    }
+
+    const data = await res.json();
+
+    const result = data.chart.result[0].meta;
+
+    const cmp = Number(result.regularMarketPrice);
+    const prevClose = Number(result.previousClose);
+
+    const changePercent =
+      ((cmp - prevClose) / prevClose) * 100;
+
+    cmpEl.value = cmp.toFixed(2);
+    changeEl.value = changePercent.toFixed(2);
+
+    document.getElementById('stock').value = symbol;
+
+    liveCmp.textContent = cmp.toFixed(2);
+
+    liveChange.textContent =
+      `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
+
+    quoteStatus.textContent = 'Fetched';
+
+    calculatePnL();
+
+  } catch (err) {
+
+    console.error(err);
+    quoteStatus.textContent = 'Error';
+    alert('Invalid Symbol or API issue.');
+
+  } finally {
+
+    fetchBtn.disabled = false;
   }
+}
 
   fetchBtn.addEventListener('click', fetchQuote);
 
