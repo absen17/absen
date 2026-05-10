@@ -31,7 +31,7 @@ window.DARVAS_ITEMS = [
   title: "NEW STOCK",
   type: "VCP",
   setup: "VCP",
-  image: "image/SCI.png",
+  image: "image/SCIC.png",
   chart: "https://www.tradingview.com/chart/?symbol=NSE:NEWSTOCK"
   }
   // {
