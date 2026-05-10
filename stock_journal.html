@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Stock Journal</title>
+  <style>
+    :root{
+      --bg:#07090d;
+      --card:#10151d;
+      --card2:#151b24;
+      --text:#f8fafc;
+      --muted:#aab4c3;
+      --red:#ef4444;
+      --red2:#b91c1c;
+      --green:#22c55e;
+      --border:rgba(239,68,68,.14);
+      --shadow:0 20px 50px rgba(0,0,0,.4);
+      --radius:22px;
+    }
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{
+      font-family:Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at top left, rgba(239,68,68,.08), transparent 25%),
+        linear-gradient(180deg,#05070a,#090d12 40%,#05070a);
+      color:var(--text);
+      min-height:100vh;
+    }
+    .container{
+      width:min(1400px,94%);
+      margin:auto;
+      padding:20px 0 40px;
+    }
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      gap:15px;
+      flex-wrap:wrap;
+      margin-bottom:20px;
+    }
+    .title h1{
+      font-size:clamp(2rem,5vw,3rem);
+      letter-spacing:-2px;
+    }
+    .title p{
+      color:var(--muted);
+      margin-top:6px;
+    }
+    .back-btn{
+      text-decoration:none;
+      color:white;
+      font-weight:700;
+      padding:12px 18px;
+      border-radius:999px;
+      background:linear-gradient(135deg,var(--red),var(--red2));
+      box-shadow:var(--shadow);
+    }
+
+    .stats{
+      display:grid;
+      grid-template-columns:repeat(4,1fr);
+      gap:14px;
+      margin-bottom:20px;
+    }
+    .stat-card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:20px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+    .stat-card span{
+      color:var(--muted);
+      display:block;
+      margin-bottom:8px;
+      font-size:.9rem;
+    }
+    .stat-card h2{font-size:1.35rem}
+
+    .main-grid{
+      display:grid;
+      grid-template-columns:380px 1fr;
+      gap:18px;
+    }
+    .panel{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:24px;
+      padding:18px;
+      box-shadow:var(--shadow);
+    }
+    .panel h2{
+      margin-bottom:18px;
+      letter-spacing:-1px;
+    }
+
+    form{display:grid;gap:12px}
+    .row{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:12px;
+    }
+    input, textarea, select{
+      width:100%;
+      padding:13px 14px;
+      border:none;
+      outline:none;
+      border-radius:14px;
+      background:var(--card2);
+      color:var(--text);
+      border:1px solid rgba(255,255,255,.04);
+    }
+    textarea{
+      resize:vertical;
+      min-height:90px;
+    }
+
+    .btn{
+      border:none;
+      cursor:pointer;
+      padding:13px;
+      border-radius:14px;
+      font-weight:700;
+      background:linear-gradient(135deg,var(--red),var(--red2));
+      color:white;
+    }
+    .btn.secondary{
+      background:#1c2330;
+    }
+
+    .quote-box{
+      display:grid;
+      gap:10px;
+      margin-bottom:12px;
+      padding:14px;
+      background:rgba(255,255,255,.02);
+      border:1px solid rgba(239,68,68,.10);
+      border-radius:18px;
+    }
+    .quote-top{
+      display:flex;
+      justify-content:space-between;
+      gap:10px;
+      align-items:center;
+      flex-wrap:wrap;
+    }
+    .quote-top strong{font-size:1rem}
+    .quote-meta{color:var(--muted);font-size:.92rem}
+    .quote-values{
+      display:grid;
+      grid-template-columns:repeat(3,1fr);
+      gap:10px;
+    }
+    .mini-box{
+      background:var(--card2);
+      border-radius:14px;
+      padding:12px;
+      border:1px solid rgba(255,255,255,.04);
+    }
+    .mini-box span{
+      display:block;
+      color:var(--muted);
+      font-size:.82rem;
+      margin-bottom:5px;
+    }
+    .mini-box b{font-size:1.05rem}
+
+    .table-wrap{
+      overflow:auto;
+      border-radius:18px;
+      border:1px solid var(--border);
+    }
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:1100px;
+    }
+    thead{
+      background:#11161f;
+    }
+    th, td{
+      text-align:left;
+      padding:14px 12px;
+      border-bottom:1px solid rgba(255,255,255,.05);
+    }
+    th{
+      color:#fff;
+      font-size:.9rem;
+      cursor:pointer;
+      user-select:none;
+      white-space:nowrap;
+    }
+    td{
+      color:#dbe2ea;
+      font-size:.95rem;
+      vertical-align:top;
+    }
+    tr:hover{
+      background:rgba(239,68,68,.04);
+    }
+    .profit{color:#86efac;font-weight:700}
+    .loss{color:#fca5a5;font-weight:700}
+    .action-btn{
+      border:none;
+      cursor:pointer;
+      padding:8px 10px;
+      border-radius:10px;
+      background:#1c2330;
+      color:white;
+      margin-right:6px;
+      margin-bottom:4px;
+    }
+    .delete-btn{background:#3b0a0a}
+
+    .hint{
+      color:var(--muted);
+      font-size:.9rem;
+      line-height:1.5;
+      margin-top:-2px;
+    }
+
+    @media(max-width:1100px){
+      .main-grid{grid-template-columns:1fr}
+      .stats{grid-template-columns:repeat(2,1fr)}
+    }
+
+    @media(max-width:640px){
+      .stats{grid-template-columns:1fr}
+      .row{grid-template-columns:1fr}
+      .back-btn{width:100%;text-align:center}
+      .quote-values{grid-template-columns:1fr}
+    }
+  </style>
+</head>
+
+<body>
+<div class="container">
+
+  <div class="topbar">
+    <div class="title">
+      <h1>Stock Journal</h1>
+      <p>Auto fetch CMP and % change, then calculate profit / loss automatically.</p>
+    </div>
+    <a class="back-btn" href="index.html">← Back Home</a>
+  </div>
+
+  <div class="stats">
+    <div class="stat-card">
+      <span>Total Entries</span>
+      <h2 id="totalEntries">0</h2>
+    </div>
+    <div class="stat-card">
+      <span>Total Profit</span>
+      <h2 id="totalProfit">0</h2>
+    </div>
+    <div class="stat-card">
+      <span>Average CAGR</span>
+      <h2 id="avgCagr">0%</h2>
+    </div>
+    <div class="stat-card">
+      <span>Win Rate</span>
+      <h2 id="winRate">0%</h2>
+    </div>
+  </div>
+
+  <div class="main-grid">
+
+    <div class="panel">
+      <h2>Add Entry</h2>
+
+      <div class="quote-box">
+        <div class="quote-top">
+          <strong>Live Quote Fetch</strong>
+          <span class="quote-meta" id="quoteStatus">Ready</span>
+        </div>
+
+        <div class="row">
+          <select id="exchange">
+            <option value="NSE">NSE</option>
+            <option value="BSE">BSE</option>
+          </select>
+          <input type="text" id="symbol" placeholder="Symbol e.g. RELIANCE, TCS, INFY" />
+        </div>
+
+        <button class="btn secondary" type="button" id="fetchBtn">Fetch CMP</button>
+
+        <div class="quote-values">
+          <div class="mini-box">
+            <span>CMP</span>
+            <b id="liveCmp">-</b>
+          </div>
+          <div class="mini-box">
+            <span>% Change</span>
+            <b id="liveChange">-</b>
+          </div>
+          <div class="mini-box">
+            <span>Exchange</span>
+            <b id="liveExchange">-</b>
+          </div>
+        </div>
+
+        <div class="hint">
+          Plug your market-data API in the <code>fetchQuote()</code> function. For a full live app, use a licensed source or a backend proxy.
+        </div>
+      </div>
+
+      <form id="stockForm">
+        <input type="text" id="stock" placeholder="Stock Name" required>
+
+        <div class="row">
+          <input type="number" id="cmp" placeholder="CMP" step="0.01" required>
+          <input type="number" id="change" placeholder="% Change" step="0.01" required>
+        </div>
+
+        <div class="row">
+          <input type="number" id="cagr" placeholder="CAGR %" step="0.01" required>
+          <input type="date" id="date" required>
+        </div>
+
+        <div class="row">
+          <input type="number" id="buyPrice" placeholder="Entry Price" step="0.01" required>
+          <input type="number" id="qty" placeholder="Quantity" step="1" required>
+        </div>
+
+        <div class="row">
+          <input type="number" id="profit" placeholder="Profit / Loss" step="0.01" readonly>
+          <input type="number" id="profitPct" placeholder="P/L %" step="0.01" readonly>
+        </div>
+
+        <textarea id="notes" placeholder="Notes"></textarea>
+
+        <button class="btn" type="submit">Save Entry</button>
+        <button class="btn secondary" type="button" id="clearBtn">Clear Form</button>
+      </form>
+    </div>
+
+    <div class="panel">
+      <h2>Journal Entries</h2>
+
+      <div class="table-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th data-sort="stock">Stock</th>
+              <th data-sort="exchange">Exch</th>
+              <th data-sort="symbol">Symbol</th>
+              <th data-sort="cmp">CMP</th>
+              <th data-sort="change">%</th>
+              <th data-sort="cagr">CAGR</th>
+              <th data-sort="date">Date</th>
+              <th data-sort="buyPrice">Buy</th>
+              <th data-sort="qty">Qty</th>
+              <th data-sort="profit">Profit</th>
+              <th data-sort="profitPct">P/L %</th>
+              <th>Notes</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody"></tbody>
+        </table>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+  const STORAGE_KEY = 'journalEntries_v2';
+
+  const form = document.getElementById('stockForm');
+  const tableBody = document.getElementById('tableBody');
+
+  const exchangeEl = document.getElementById('exchange');
+  const symbolEl = document.getElementById('symbol');
+  const fetchBtn = document.getElementById('fetchBtn');
+  const quoteStatus = document.getElementById('quoteStatus');
+  const liveCmp = document.getElementById('liveCmp');
+  const liveChange = document.getElementById('liveChange');
+  const liveExchange = document.getElementById('liveExchange');
+
+  const cmpEl = document.getElementById('cmp');
+  const changeEl = document.getElementById('change');
+  const buyPriceEl = document.getElementById('buyPrice');
+  const qtyEl = document.getElementById('qty');
+  const profitEl = document.getElementById('profit');
+  const profitPctEl = document.getElementById('profitPct');
+  const cagrEl = document.getElementById('cagr');
+
+  let entries = JSON.parse(localStorage.getItem(STORAGE_KEY)) || [];
+  let sortKey = 'date';
+  let sortAsc = false;
+
+  // ---------- live calculation ----------
+  function calculatePnL(){
+    const cmp = Number(cmpEl.value || 0);
+    const buy = Number(buyPriceEl.value || 0);
+    const qty = Number(qtyEl.value || 0);
+
+    const pnl = (cmp - buy) * qty;
+    const pnlPct = buy > 0 ? ((cmp - buy) / buy) * 100 : 0;
+
+    profitEl.value = pnl ? pnl.toFixed(2) : '0.00';
+    profitPctEl.value = pnlPct ? pnlPct.toFixed(2) : '0.00';
+
+    return { pnl, pnlPct };
+  }
+
+  cmpEl.addEventListener('input', calculatePnL);
+  buyPriceEl.addEventListener('input', calculatePnL);
+  qtyEl.addEventListener('input', calculatePnL);
+
+  // ---------- market data fetch ----------
+  async function fetchQuote(){
+    const exchange = exchangeEl.value.trim().toUpperCase();
+    const symbol = symbolEl.value.trim().toUpperCase();
+
+    if(!symbol){
+      alert('Please enter a symbol first.');
+      return;
+    }
+
+    quoteStatus.textContent = 'Fetching...';
+    liveExchange.textContent = exchange + ' / ' + symbol;
+    fetchBtn.disabled = true;
+
+    try{
+      /*
+        Replace this with your real data provider / backend route.
+        Expected JSON response example:
+        {
+          "cmp": 1234.5,
+          "changePercent": 1.23,
+          "name": "Reliance Industries"
+        }
+      */
+
+      const API_URL = `/api/quote?exchange=${encodeURIComponent(exchange)}&symbol=${encodeURIComponent(symbol)}`;
+      const res = await fetch(API_URL);
+
+      if(!res.ok){
+        throw new Error('Quote API failed');
+      }
+
+      const data = await res.json();
+
+      const cmp = Number(data.cmp);
+      const changePercent = Number(data.changePercent);
+      const name = data.name || symbol;
+
+      if(!Number.isFinite(cmp) || !Number.isFinite(changePercent)){
+        throw new Error('Invalid API response');
+      }
+
+      cmpEl.value = cmp.toFixed(2);
+      changeEl.value = changePercent.toFixed(2);
+      document.getElementById('stock').value = name;
+
+      liveCmp.textContent = cmp.toFixed(2);
+      liveChange.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
+      quoteStatus.textContent = 'Fetched';
+      calculatePnL();
+    }catch(err){
+      quoteStatus.textContent = 'Manual fallback';
+      alert('Live API not connected or failed. You can still enter CMP manually.');
+      console.error(err);
+    }finally{
+      fetchBtn.disabled = false;
+    }
+  }
+
+  fetchBtn.addEventListener('click', fetchQuote);
+
+  // ---------- storage ----------
+  function saveEntries(){
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(entries));
+  }
+
+  function clearForm(){
+    form.reset();
+    liveCmp.textContent = '-';
+    liveChange.textContent = '-';
+    liveExchange.textContent = '-';
+    quoteStatus.textContent = 'Ready';
+    profitEl.value = '';
+    profitPctEl.value = '';
+  }
+
+  document.getElementById('clearBtn').addEventListener('click', clearForm);
+
+  // ---------- table render ----------
+  function getSortValue(entry, key){
+    if(key === 'profit' || key === 'profitPct' || key === 'cmp' || key === 'change' || key === 'cagr' || key === 'buyPrice' || key === 'qty'){
+      return Number(entry[key]) || 0;
+    }
+    return (entry[key] || '').toString().toLowerCase();
+  }
+
+  function renderTable(){
+    const list = [...entries].sort((a, b) => {
+      const A = getSortValue(a, sortKey);
+      const B = getSortValue(b, sortKey);
+
+      if(typeof A === 'number' && typeof B === 'number'){
+        return sortAsc ? A - B : B - A;
+      }
+      return sortAsc ? String(A).localeCompare(String(B)) : String(B).localeCompare(String(A));
+    });
+
+    tableBody.innerHTML = '';
+
+    let totalProfit = 0;
+    let totalCagr = 0;
+    let wins = 0;
+
+    list.forEach((entry, index) => {
+      totalProfit += Number(entry.profit || 0);
+      totalCagr += Number(entry.cagr || 0);
+      if(Number(entry.profit || 0) > 0) wins++;
+
+      const profitClass = Number(entry.profit) >= 0 ? 'profit' : 'loss';
+
+      tableBody.innerHTML += `
+        <tr>
+          <td><strong>${entry.stock}</strong></td>
+          <td>${entry.exchange}</td>
+          <td>${entry.symbol}</td>
+          <td>${Number(entry.cmp).toFixed(2)}</td>
+          <td>${Number(entry.change).toFixed(2)}%</td>
+          <td>${Number(entry.cagr).toFixed(2)}%</td>
+          <td>${entry.date}</td>
+          <td>${Number(entry.buyPrice).toFixed(2)}</td>
+          <td>${entry.qty}</td>
+          <td class="${profitClass}">${Number(entry.profit).toFixed(2)}</td>
+          <td class="${profitClass}">${Number(entry.profitPct).toFixed(2)}%</td>
+          <td>${entry.notes || '-'}</td>
+          <td>
+            <button class="action-btn delete-btn" onclick="deleteEntry(${index})">Delete</button>
+          </td>
+        </tr>
+      `;
+    });
+
+    document.getElementById('totalEntries').innerText = list.length;
+    document.getElementById('totalProfit').innerText = totalProfit.toFixed(2);
+    document.getElementById('avgCagr').innerText = list.length ? (totalCagr / list.length).toFixed(2) + '%' : '0%';
+    document.getElementById('winRate').innerText = list.length ? ((wins / list.length) * 100).toFixed(0) + '%' : '0%';
+  }
+
+  // ---------- form submit ----------
+  form.addEventListener('submit', (e) => {
+    e.preventDefault();
+
+    const pnlData = calculatePnL();
+
+    const entry = {
+      stock: document.getElementById('stock').value.trim().toUpperCase(),
+      exchange: exchangeEl.value,
+      symbol: symbolEl.value.trim().toUpperCase(),
+      cmp: Number(cmpEl.value || 0),
+      change: Number(changeEl.value || 0),
+      cagr: Number(cagrEl.value || 0),
+      date: document.getElementById('date').value,
+      buyPrice: Number(buyPriceEl.value || 0),
+      qty: Number(qtyEl.value || 0),
+      profit: Number(profitEl.value || 0),
+      profitPct: Number(profitPctEl.value || 0),
+      notes: document.getElementById('notes').value.trim()
+    };
+
+    entries.unshift(entry);
+    saveEntries();
+    renderTable();
+    clearForm();
+  });
+
+  // ---------- delete ----------
+  function deleteEntry(index){
+    entries.splice(index, 1);
+    saveEntries();
+    renderTable();
+  }
+
+  // ---------- sorting ----------
+  document.querySelectorAll('th[data-sort]').forEach(th => {
+    th.addEventListener('click', () => {
+      const key = th.dataset.sort;
+      if(sortKey === key){
+        sortAsc = !sortAsc;
+      }else{
+        sortKey = key;
+        sortAsc = false;
+      }
+      renderTable();
+    });
+  });
+
+  renderTable();
+</script>
+</body>
+</html>
