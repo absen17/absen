@@ -432,7 +432,7 @@ body[data-theme="light"] .theme-btn{
           <a href="test.html">Journal</a>
         </nav>
 
-        <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle dark mode">🌙 Dark</button>
+        <button class="theme-btn" id="themeBtn" type="button" aria-label="Toggle dark mode">🌙</button>
         <button class="menu-btn" id="menuBtn" type="button" aria-label="Toggle menu">☰ Menu</button>
       </div>
     </div>
@@ -561,7 +561,7 @@ body[data-theme="light"] .theme-btn{
     const savedTheme = localStorage.getItem('theme');
     if (savedTheme) {
       body.setAttribute('data-theme', savedTheme);
-      themeBtn.textContent = savedTheme === 'dark' ? '☀️ Light' : '🌙 Dark';
+      themeBtn.textContent = savedTheme === 'dark' ? '☀️' : '🌙';
     }
 
     themeBtn.addEventListener('click', () => {
@@ -569,7 +569,7 @@ body[data-theme="light"] .theme-btn{
       const next = current === 'dark' ? 'light' : 'dark';
       body.setAttribute('data-theme', next);
       localStorage.setItem('theme', next);
-      themeBtn.textContent = next === 'dark' ? '☀️ Light' : '🌙 Dark';
+      themeBtn.textContent = next === 'dark' ? '☀️' : '🌙';
     });
 
     menuBtn.addEventListener('click', () => {
