@@ -338,59 +338,85 @@ select{
 </div>
 
 <script>
+const items = [
+  {
+    title: "Nestle",
+    type: "RH&S",
+    setup: "Reverse Head & Shoulders",
+    image: "image/nestle.png",
+    chart: "https://www.tradingview.com/chart/?symbol=NSE:NESTLEIND"
+  },
+  {
+    title: "KWIL",
+    type: "VCP",
+    setup: "VCP",
+    image: "image/KWIL.png",
+    chart: "https://www.tradingview.com/chart/?symbol=NSE:KWIL"
+  },
+  {
+    title: "KRISHNADEF",
+    type: "Monthly Breakout",
+    setup: "Monthly Breakout",
+    image: "image/KRISHNADEF.png",
+    chart: "https://www.tradingview.com/chart/?symbol=NSE:KRISHNADEF"
+  },
+  {
+    title: "SCI",
+    type: "VCP",
+    setup: "VCP",
+    image: "image/SCI.png",
+    chart: "https://www.tradingview.com/chart/?symbol=NSE:SCI"
+  }
+];
+
 const imageContainer = document.getElementById("imageContainer");
-const setupFilter = document.getElementById("setupFilter");
+const setupFilter = document.querySelector("select");
 
 function openImage(src){
-    document.getElementById("popup").style.display = "flex";
-    document.getElementById("popup-img").src = src;
+  document.getElementById("popup").style.display = "flex";
+  document.getElementById("popup-img").src = src;
 }
 
 function closeImage(){
-    document.getElementById("popup").style.display = "none";
+  document.getElementById("popup").style.display = "none";
 }
 
 function renderCards(type = "all"){
-    const items = window.DARVAS_ITEMS || [];
-    const filtered = type === "all"
-      ? items
-      : items.filter(item => item.type === type);
+  const filtered = type === "all"
+    ? items
+    : items.filter(item => item.type === type);
 
-    if (!filtered.length) {
-      imageContainer.innerHTML = `
-        <div class="empty-state">
-          No setups found for this filter.
-        </div>
-      `;
-      return;
-    }
-
-    imageContainer.innerHTML = filtered.map(item => `
-      <div class="card" data-type="${item.type}">
-          <img src="${item.image}" onclick="openImage(this.src)" alt="${item.title} chart">
-          <div class="card-content">
-              <div class="card-text">
-                  <h3>${item.title}</h3>
-                  <p>${item.setup}</p>
-              </div>
-              <a href="${item.chart}" target="_blank" class="tv-btn">📈 Chart</a>
-          </div>
+  if (!filtered.length) {
+    imageContainer.innerHTML = `
+      <div class="empty-state">
+        No setups found for this filter.
       </div>
-    `).join("");
-}
+    `;
+    return;
+  }
 
-function filterCards(type){
-    renderCards(type);
+  imageContainer.innerHTML = filtered.map(item => `
+    <div class="card" data-type="${item.type}">
+      <img src="${item.image}" onclick="openImage(this.src)" alt="${item.title} chart">
+      <div class="card-content">
+        <div class="card-text">
+          <h3>${item.title}</h3>
+          <p>${item.setup}</p>
+        </div>
+        <a href="${item.chart}" target="_blank" class="tv-btn">📈 Chart</a>
+      </div>
+    </div>
+  `).join("");
 }
 
 setupFilter.addEventListener("change", (e) => {
-    filterCards(e.target.value);
+  renderCards(e.target.value);
 });
 
 document.addEventListener("keydown", function(e){
-    if(e.key === "Escape"){
-        closeImage();
-    }
+  if(e.key === "Escape"){
+    closeImage();
+  }
 });
 
 renderCards("all");
