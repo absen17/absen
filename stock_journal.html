@@ -404,7 +404,8 @@
 
 
   // const QUOTE_API_URL = 'https://your-api-domain.com/api/quote';
-  const QUOTE_API_URL = 'https://api.allorigins.win/raw?url=';
+  const ALPHA_VANTAGE_API_KEY = 'IGEJOXHUZRS923KF';
+  const QUOTE_API_URL = 'https://www.alphavantage.co/query';
 
   const form = document.getElementById('stockForm');
   const tableBody = document.getElementById('tableBody');
@@ -462,10 +463,7 @@
   try {
     quoteStatus.textContent = 'Fetching...';
 
-    const apiSymbol = exchange === 'BSE' ? `${symbol}.BO` : `${symbol}.NS`;
-    const targetUrl = `http://65.0.104.9/stock?symbol=${encodeURIComponent(apiSymbol)}&res=num`;
-
-    const url = QUOTE_API_URL + encodeURIComponent(targetUrl);
+    const url = `${QUOTE_API_URL}?function=GLOBAL_QUOTE&symbol=${encodeURIComponent(symbol)}&apikey=${encodeURIComponent(ALPHA_VANTAGE_API_KEY)}`;
     const res = await fetch(url);
 
     if (!res.ok) {
@@ -473,11 +471,14 @@
     }
 
     const data = await res.json();
+    const quote = data['Global Quote'];
 
-    const stockData = data.data || data;
-    const cmp = Number(stockData.last_price);
-    const changePercent = Number(stockData.percent_change);
-    const name = stockData.company_name || symbol;
+    if (!quote) {
+      throw new Error('No quote data returned');
+    }
+
+    const cmp = Number(quote['05. price']);
+    const changePercent = Number(String(quote['10. change percent'] || '0').replace('%', ''));
 
     if (!Number.isFinite(cmp) || !Number.isFinite(changePercent)) {
       throw new Error('Invalid API response');
@@ -485,7 +486,7 @@
 
     cmpEl.value = cmp.toFixed(2);
     changeEl.value = changePercent.toFixed(2);
-    document.getElementById('stock').value = name;
+    document.getElementById('stock').value = symbol;
 
     liveCmp.textContent = cmp.toFixed(2);
     liveChange.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
